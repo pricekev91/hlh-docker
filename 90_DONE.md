@@ -4,7 +4,7 @@ This is what is already implemented and verified in this repository.
 
 ## ADRs
 
-- ADR-001: Container host architecture for HLH (unprivileged LXC, Docker + Dockhand + LazyDocker, vmid 102)
+- ADR-001: Container host architecture for HLH (unprivileged LXC, Docker + Dockhand + LazyDocker, vmid 111)
 
 ### Fixed
 
@@ -20,7 +20,7 @@ This is what is already implemented and verified in this repository.
 
 ## LXC Deployment
 
-- Unprivileged LXC 102 on Proxmox via OpenTofu (bpg/proxmox provider >= 0.66.0)
+- Unprivileged LXC 111 on Proxmox via OpenTofu (bpg/proxmox provider >= 0.66.0)
 - Hostname: `hlh-docker`
 - IP: `192.168.1.11/24`
 - Resources: 4 vCPU, 4096 MB RAM, 1024 MB swap, 32GB rootfs on `RaidZ1-6TB`

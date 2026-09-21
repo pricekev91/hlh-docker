@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# HLH-Docker — Pure-Bash Infrastructure-as-Code for Proxmox LXC (vmid 102)
+# HLH-Docker — Pure-Bash Infrastructure-as-Code for Proxmox LXC (vmid 111)
 # ============================================================================
 #
 # Deploys an unprivileged LXC running Docker Engine, Dockhand (GUI), and
@@ -15,7 +15,7 @@
 #   ./deploy-hlh-docker.sh --help        Show this help
 #
 # ENVIRONMENT VARIABLES (all have sane defaults):
-#   HLH_LXC_VMID          Container VMID       (default: 102)
+#   HLH_LXC_VMID          Container VMID       (default: 111)
 #   HLH_LXC_HOSTNAME      Container hostname   (default: hlh-docker)
 #   HLH_LXC_IP            Container IP address (default: 192.168.1.11)
 #   HLH_LXC_GW            Gateway address      (default: 192.168.1.1)
@@ -41,7 +41,7 @@ set -euo pipefail
 
 # --- Configuration -----------------------------------------------------------
 
-LXC_VMID="${HLH_LXC_VMID:-102}"
+LXC_VMID="${HLH_LXC_VMID:-111}"
 LXC_HOSTNAME="${HLH_LXC_HOSTNAME:-hlh-docker}"
 LXC_IP="${HLH_LXC_IP:-192.168.1.11}"
 LXC_GW="${HLH_LXC_GW:-192.168.1.1}"
