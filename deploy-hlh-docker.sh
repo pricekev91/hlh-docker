@@ -195,21 +195,33 @@ if [[ "$MODE" == "config-only" ]]; then
     ok "LXC ${LXC_VMID} exists and is running (config-only mode)"
 fi
 
-# 7. Check if LXC already exists (non-nuke) - auto-nuke if running
+# 7. Check if LXC already exists (non-nuke) - prompt DELETE_IT to nuke
 if [[ "$MODE" != "config-only" && "$MODE" != "plan" && "$NUKE" -eq 0 && lxc_exists ]]; then
-    warn "LXC ${LXC_VMID} already exists - auto-nuking and rebuilding..."
     if lxc_running; then
-        section "Auto-nuke: stopping LXC ${LXC_VMID}"
-        pct stop "$LXC_VMID" || true
-        ok "LXC stopped"
-    fi
-    section "Auto-nuke: destroying LXC ${LXC_VMID}"
-    if pct destroy "$LXC_VMID" 2>/dev/null; then
-        ok "LXC destroyed"
+        echo ""
+        read -rp "LXC ${LXC_VMID} is already running. Type DELETE_IT to nuke and rebuild, or 'no' to exit: " confirm
+        if [[ "$confirm" == "DELETE_IT" ]]; then
+            warn "Nuking LXC ${LXC_VMID} per DELETE_IT..."
+            section "Nuke: stopping LXC ${LXC_VMID}"
+            pct stop "$LXC_VMID" || true
+            ok "LXC stopped"
+            section "Nuke: destroying LXC ${LXC_VMID}"
+            if pct destroy "$LXC_VMID" 2>/dev/null; then
+                ok "LXC destroyed"
+            else
+                info "LXC ${LXC_VMID} config already removed, skipping destroy"
+            fi
+            ok "LXC nuked - proceeding with fresh create"
+        elif [[ "$confirm" == "no" ]]; then
+            info "Exiting without changes."
+            exit 0
+        else
+            fail "Invalid input '${confirm}' - expected DELETE_IT or no. Exiting." >&2
+            exit 1
+        fi
     else
-        info "LXC ${LXC_VMID} config already removed, skipping destroy"
+        warn "LXC ${LXC_VMID} already exists (not running) - proceeding to update/create"
     fi
-    ok "LXC auto-nuke done - proceeding with fresh create"
 fi
 
 # --- Plan mode ----------------------------------------------------------------
