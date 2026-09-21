@@ -195,16 +195,21 @@ if [[ "$MODE" == "config-only" ]]; then
     ok "LXC ${LXC_VMID} exists and is running (config-only mode)"
 fi
 
-# 7. Check if LXC already exists (non-nuke)
-if [[ "$MODE" != "config-only" && "$NUKE" -eq 0 && lxc_exists ]]; then
+# 7. Check if LXC already exists (non-nuke) - auto-nuke if running
+if [[ "$MODE" != "config-only" && "$MODE" != "plan" && "$NUKE" -eq 0 && lxc_exists ]]; then
+    warn "LXC ${LXC_VMID} already exists - auto-nuking and rebuilding..."
     if lxc_running; then
-        echo ""
-        read -rp "LXC ${LXC_VMID} is already running. Quit? (y/n) " confirm
-        if [[ "$confirm" =~ ^[Yy]$ ]]; then
-            info "Quitting. Use --nuke to destroy and rebuild."
-            exit 0
-        fi
+        section "Auto-nuke: stopping LXC ${LXC_VMID}"
+        pct stop "$LXC_VMID" || true
+        ok "LXC stopped"
     fi
+    section "Auto-nuke: destroying LXC ${LXC_VMID}"
+    if pct destroy "$LXC_VMID" 2>/dev/null; then
+        ok "LXC destroyed"
+    else
+        info "LXC ${LXC_VMID} config already removed, skipping destroy"
+    fi
+    ok "LXC auto-nuke done - proceeding with fresh create"
 fi
 
 # --- Plan mode ----------------------------------------------------------------
