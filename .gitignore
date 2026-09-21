@@ -1,0 +1,9 @@
+.hlh-secrets
+**/.hlh-secrets
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+.DS_Store
+.tools/
