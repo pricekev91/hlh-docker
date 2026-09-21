@@ -55,6 +55,7 @@ DISK="${HLH_DISK:-32}"
 DISK_POOL="${HLH_DISK_POOL:-RaidZ1-6TB}"
 NESTING="${HLH_NESTING:-1}"
 KEYCTL="${HLH_KEYCTL:-1}"
+ENABLE_ROOT_PASSWORD_SSH="${HLH_ENABLE_ROOT_PASSWORD_SSH:-1}"
 
 DATA_DS="hlh-docker-data"
 
@@ -432,6 +433,29 @@ section "Software installation"
 lxc_cmd() {
     pct exec "$LXC_VMID" -- bash -lc "$1"
 }
+
+# --- SSH root password login (mirror hlh-ai-engine-vllm:336 - green-field sets pwd via HLH_LXC_ROOTPWD) ---
+if [[ "${ENABLE_ROOT_PASSWORD_SSH}" == "1" ]]; then
+    section "SSH root login"
+    info "Enabling PermitRootLogin yes + PasswordAuthentication yes (99-root-login.conf)..."
+    lxc_cmd '
+        set -euo pipefail
+        apt-get update 2>&1 | tail -5 || true
+        apt-get install -y --no-install-recommends openssh-server 2>&1 | tail -10 || true
+        mkdir -p /etc/ssh/sshd_config.d
+        cat > /etc/ssh/sshd_config.d/99-root-login.conf <<SSHEOF
+PermitRootLogin yes
+PasswordAuthentication yes
+KbdInteractiveAuthentication no
+UsePAM yes
+SSHEOF
+        systemctl enable ssh 2>&1 || systemctl enable sshd 2>&1 || true
+        systemctl restart ssh 2>&1 || systemctl restart sshd 2>&1 || true
+    '
+    ok "sshd root login enabled"
+else
+    info "HLH_ENABLE_ROOT_PASSWORD_SSH=0 - skipping sshd root login"
+fi
 
 # --- Docker Engine ---
 

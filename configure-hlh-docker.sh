@@ -17,6 +17,7 @@ LXC_VMID="${LXC_VMID:-111}"
 LXC_HOSTNAME="${LXC_HOSTNAME:-hlh-docker}"
 LXC_IP="${LXC_IP:-192.168.1.11}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
+ENABLE_ROOT_PASSWORD_SSH="${ENABLE_ROOT_PASSWORD_SSH:-1}"
 
 # --- Helper functions ----------------------------------------------------
 
@@ -49,6 +50,28 @@ fi
 # --- Main configuration steps --------------------------------------------------
 
 section "Configuring LXC $LXC_VMID"
+
+# 0. Enable root password SSH (mirror hlh-ai-engine-vllm:336)
+if [[ "${ENABLE_ROOT_PASSWORD_SSH}" == "1" ]]; then
+  info "Enabling root password SSH (PermitRootLogin yes)..."
+  pct exec "$LXC_VMID" -- bash -c '
+    set -euo pipefail
+    apt-get update 2>&1 | tail -5 || true
+    apt-get install -y --no-install-recommends openssh-server 2>&1 | tail -10 || true
+    mkdir -p /etc/ssh/sshd_config.d
+    cat > /etc/ssh/sshd_config.d/99-root-login.conf <<EOF
+PermitRootLogin yes
+PasswordAuthentication yes
+KbdInteractiveAuthentication no
+UsePAM yes
+EOF
+    systemctl enable ssh 2>&1 || systemctl enable sshd 2>&1 || true
+    systemctl restart ssh 2>&1 || systemctl restart sshd 2>&1 || true
+  '
+  ok "sshd root login enabled (99-root-login.conf)"
+else
+  info "ENABLE_ROOT_PASSWORD_SSH=0 - skipping sshd root login"
+fi
 
 # 1. Ensure Docker is running
 info "Ensuring Docker service is running..."

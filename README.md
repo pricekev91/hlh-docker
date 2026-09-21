@@ -84,6 +84,8 @@ All settings are configurable via environment variables:
 | `HLH_DISK_POOL` | RaidZ1-6TB | ZFS storage pool |
 | `HLH_NESTING` | 1 | Enable nesting |
 | `HLH_SSH_KEY` | ~/.ssh/id_ed25519.pub | SSH public key for bootstrap |
+| `HLH_LXC_ROOTPWD` | *(prompt)* | Root password - sets `pct set --rootpw` + enables `PermitRootLogin yes` via `99-root-login.conf` (mirror `hlh-ai-engine-vllm`) |
+| `HLH_ENABLE_ROOT_PASSWORD_SSH` | 1 | Enable root password SSH (`1` = `PermitRootLogin yes` + `PasswordAuthentication yes`, `0` = skip) |
 
 Example with custom IP:
 
