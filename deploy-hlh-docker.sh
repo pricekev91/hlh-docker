@@ -368,16 +368,44 @@ while ! lxc_running; do
 done
 ok "LXC ${LXC_VMID} is running (${WAITED}s)"
 
-# --- Root password ----------------------------------------------------------
+# --- Root password (mirror hlh-ai-engine-vllm deploy: interactive prompt + env var via chpasswd, ensures ssh root@ works) ----------
 
 section "Root password"
 
-ROOT_PWD="${HLH_LXC_ROOTPWD:-}"
-if [[ -z "$ROOT_PWD" ]]; then
-    info "No root password provided. Set it later with: pct enter $LXC_VMID && passwd root"
+if [[ -t 0 ]] && [[ -z "${HLH_LXC_ROOTPWD:-}" ]] && [[ -z "${NONINTERACTIVE_MODE:-}" ]]; then
+    echo ""
+    echo "Root password for LXC ${LXC_VMID} is not set by pct create."
+    echo "You currently do: pct enter ${LXC_VMID} -> passwd"
+    read -rsp "Set root password now? [Y/n] (empty=no, y=set): " _pw_ask; echo
+    case "${_pw_ask}" in
+        ""|n|N|no|NO) info "Skipping password set — you can still run: pct exec ${LXC_VMID} -- passwd";;
+        *)
+            read -rsp "New root password for ${LXC_VMID}: " _pw; echo
+            if [[ -z "${_pw}" ]]; then info "Empty password — skipping."; else
+                read -rsp "Confirm root password: " _pw2; echo
+                if [[ "${_pw}" != "${_pw2}" ]]; then
+                    warn "Passwords do not match — skipping. Run manually: pct exec ${LXC_VMID} -- passwd" >&2
+                else
+                    if printf "root:%s\n" "${_pw}" | pct exec "${LXC_VMID}" -- chpasswd 2>&1; then
+                        ok "Root password set for LXC ${LXC_VMID} (ssh root@${LXC_IP} ready)."
+                    else
+                        warn "Failed to set password — try manually: pct exec ${LXC_VMID} -- passwd" >&2
+                    fi
+                fi
+            fi
+            unset _pw _pw2
+            ;;
+    esac
+    unset _pw_ask
+elif [[ -n "${HLH_LXC_ROOTPWD:-}" ]]; then
+    info "Setting root password via HLH_LXC_ROOTPWD env..."
+    if printf "root:%s\n" "${HLH_LXC_ROOTPWD}" | pct exec "${LXC_VMID}" -- chpasswd 2>&1; then
+        ok "Root password set via env for LXC ${LXC_VMID} (ssh root@${LXC_IP} ready)."
+    else
+        warn "Failed to set password via env — try manually: pct exec ${LXC_VMID} -- passwd" >&2
+    fi
 else
-    pct set "$LXC_VMID" --rootpw "$ROOT_PWD"
-    ok "Root password set"
+    info "No root password provided. Set it later with: pct exec ${LXC_VMID} -- passwd (or HLH_LXC_ROOTPWD=xxx ./deploy-hlh-docker.sh --apply)"
 fi
 
 # --- Bind mount ZFS dataset ---------------------------------------------------
@@ -672,3 +700,4 @@ section "Deploy complete"
 ok "LXC ${LXC_VMID} (${LXC_HOSTNAME}) is live at ${LXC_IP}"
 info "Dockhand GUI available at http://${LXC_IP}:80"
 info "LazyDocker: lazydocker (inside LXC)"
+info "SSH: ssh root@${LXC_IP} (PermitRootLogin yes via 99-root-login.conf) | pct exec ${LXC_VMID} -- bash"
