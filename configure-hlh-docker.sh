@@ -13,9 +13,9 @@
 set -euo pipefail
 
 # Configuration variables
-LXC_VMID="${LXC_VMID:-120}"
+LXC_VMID="${LXC_VMID:-109}"
 LXC_HOSTNAME="${LXC_HOSTNAME:-hlh-docker}"
-LXC_IP="${LXC_IP:-192.168.1.20}"
+LXC_IP="${LXC_IP:-192.168.1.9}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
 ENABLE_ROOT_PASSWORD_SSH="${ENABLE_ROOT_PASSWORD_SSH:-1}"
 

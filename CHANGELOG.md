@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **LXC 120/192.168.1.20 → 109/192.168.1.9** — hlh-docker moves to the `.9` slot (VMID 109, free on host). `LXC_VMID`/`LXC_IP` defaults in deploy + configure scripts and runtime-contract docs updated.
 - **LXC 111/192.168.1.11 → 120/192.168.1.20** — `.11` stays with `hlh-ai-engine-egpu` (OCuLink V100 workhorse, live on prox01 as VMID 111); hlh-docker reuses the retired vulkan slot `.20` (VMID 120, free on host). `LXC_VMID`/`LXC_IP` defaults in deploy + configure scripts and runtime-contract docs updated. `90_DONE.md`/`ADR-001.md` kept as historical record of the original `.11` build.
 
 ### Fixed

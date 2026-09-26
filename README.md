@@ -10,7 +10,7 @@ This repository deploys and configures the **Docker LXC** on the HLH Proxmox hos
 The Docker host provides a secure, reproducible container runtime for application
 service stacks (Dockhand, LazyDocker).
 
-- LXC 120, hostname `hlh-docker`, IP `192.168.1.20`
+- LXC 109, hostname `hlh-docker`, IP `192.168.1.9`
 - Unprivileged LXC with nesting + keyctl
 - Docker Engine + Dockhand (GUI) + LazyDocker (TUI)
 - 4 vCPU, 4GB RAM, 32GB rootfs on `RaidZ1-6TB` ZFS pool
@@ -72,9 +72,9 @@ All settings are configurable via environment variables:
 
 | Variable | Default | Description |
 |--------|---------|-----------|
-| `HLH_LXC_VMID` | 120 | Container ID |
+| `HLH_LXC_VMID` | 109 | Container ID |
 | `HLH_LXC_HOSTNAME` | hlh-docker | Container hostname |
-| `HLH_LXC_IP` | 192.168.1.20 | Container IP address |
+| `HLH_LXC_IP` | 192.168.1.9 | Container IP address |
 | `HLH_LXC_GW` | 192.168.1.1 | Gateway address |
 | `HLH_LXC_NET` | vmbr0 | Bridge interface |
 | `HLH_TARGET_NODE` | prox01 | Proxmox node name |
@@ -102,8 +102,8 @@ Dockhand + LazyDocker, ZFS storage, VLAN-aware networking.
 
 | Item | Value |
 |------|-------|
-| Host IP | 192.168.1.20 |
-| Dockhand GUI | http://192.168.1.20:80 |
+| Host IP | 192.168.1.9 |
+| Dockhand GUI | http://192.168.1.9:80 |
 | Docker socket | /var/run/docker.sock (bind-mounted into LXC) |
 | Dockhand data | /srv/dockhand/data (host ZFS mount) |
 | Docker data | /var/lib/docker (host ZFS mount) |
