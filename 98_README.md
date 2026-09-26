@@ -9,7 +9,7 @@ This repository deploys and configures the **Docker LXC** on the HLH Proxmox hos
 The Docker host provides a secure, reproducible container runtime for application
 service stacks (Dockhand, LazyDocker).
 
-- LXC 111, hostname `hlh-docker`, IP `192.168.1.11`
+- LXC 120, hostname `hlh-docker`, IP `192.168.1.20`
 - Unprivileged LXC with nesting + keyctl
 - Docker Engine + Dockhand (GUI) + LazyDocker (TUI)
 - 4 vCPU, 4GB RAM, 32GB rootfs on `RaidZ1-6TB` ZFS pool
@@ -64,8 +64,8 @@ See `ADR-001.md` for the full architecture decision: unprivileged LXC, Docker + 
 
 | Item | Value |
 |------|-------|
-| Host IP | `192.168.1.11` |
-| Dockhand GUI | `http://192.168.1.11:80` |
+| Host IP | `192.168.1.20` |
+| Dockhand GUI | `http://192.168.1.20:80` |
 | Docker socket | `/var/run/docker.sock` (inside LXC) |
 | Dockhand data | `/srv/dockhand` (host mount) |
 | Rootfs | 32GB on `RaidZ1-6TB` ZFS pool |
